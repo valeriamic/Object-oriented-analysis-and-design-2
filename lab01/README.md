@@ -8,4 +8,4 @@
 2. ParticipantBuilder - абстрактный строитель. Методы: buildStats(), buildEngine(), buildSponsorDesign(), buildRaceSetup(), getResult().
 3. Конкретные строители (McQueenBuilder, CruzBuilder, HudsonBuilder, StormBuilder, BernulliBuilder, MaterBuilder) формируют участников по собственной логике.
 4. Продукт RaceParticipant содержит имя участника, настройку двигателя, мощность, цвет, оформление спонсора, опыт и метод готовности к гонке.
-<img width="614" height="678" alt="ТАЧКИ drawio" src="https://github.com/user-attachments/assets/2765c088-e0f7-4f17-844a-ec47593f0a53" />
+<img width="851" height="761" alt="ТАЧКИ" src="https://github.com/user-attachments/assets/49260fb9-383b-4f5d-8fe9-5b8063324511" />
