@@ -12,7 +12,7 @@
 2. ParticipantBuilder - абстрактный строитель. Методы: buildStats(), buildEngine(), buildSponsorDesign(), buildRaceSetup(), getResult().  
 3. Конкретные строители (McQueenBuilder, CruzBuilder, HudsonBuilder, StormBuilder, BernulliBuilder, MaterBuilder) формируют участников по собственной логике.  
 4. Продукт RaceParticipant содержит имя участника, настройку двигателя, мощность, цвет, оформление спонсора, опыт и метод готовности к гонке.  
-<img width="851" height="981" alt="ТАЧКИ (1)" src="https://github.com/user-attachments/assets/9aec43ff-b3d4-4842-950e-404ae683e000" />
+<img width="851" height="1021" alt="Тачки1" src="https://github.com/user-attachments/assets/6ac81223-6edf-4827-b2f0-15c51a9d8339" />
 
 <h3 align="center"> Реализация идеи без строителя. </h3>
 
@@ -166,86 +166,186 @@ namespace RustezeRacing
 ```cs
 using System;
 using System.Collections.Generic;
+using System.Drawing;
+using System.Windows.Forms;
+using System.IO;
 
-namespace RustezeRacing
+namespace CarsApp
 {
+    public partial class Form1 : Form
+    {
+        Director director = new Director();
+        private string lastUpgradedRacer = "";
+
+        public Form1()
+        {
+            InitializeComponent();
+        }
+
+        private void UpdateDisplay(RaceParticipant racer)
+        {
+            lblStats.Text = $"Гонщик: {racer.Name}\n" +
+                    $"Опыт (в годах): {racer.Exp}\n" +
+                    $"Мощность: {racer.Power} л.с.\n" +
+                    $"Настройки: {racer.Setup}\n" +
+                    $"Дизайн: {(racer.SponsorDesign ? "С логотипом" : "Базовый")}";
+
+            if (File.Exists(racer.ImagePath))
+            {
+                using (var stream = new FileStream(racer.ImagePath, FileMode.Open, FileAccess.Read))
+                {
+                    picRacer.Image = Image.FromStream(stream);
+                }
+            }
+            else
+            {
+                MessageBox.Show("Файл не найден: " + racer.ImagePath);
+            }
+        }
+
+        private ParticipantBuilder GetSelectedBuilder()
+        {
+            if (comboBoxRacers.SelectedItem == null) return null;
+            string selection = comboBoxRacers.SelectedItem.ToString();
+
+            switch (selection)
+            {
+                case "Молния Маккуин": return new McQueenBuilder();
+                case "Мэтр": return new MaterBuilder();
+                case "Круз Рамирес": return new CruzBuilder();
+                case "Джексон Шторм": return new StormBuilder();
+                case "Док Хадсон": return new HudsonBuilder();
+                case "Франческо Бернулли": return new BernoulliBuilder();
+                default: return null;
+            }
+        }
+
+        private void comboBoxRacers_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            var builder = GetSelectedBuilder();
+            if (builder != null)
+            {
+                builder.BuildStats();
+                builder.BuildEngine();
+                builder.BuildSetup();
+                builder.BuildExp();
+                builder.BuildDesign();
+                UpdateDisplay(builder.GetResult());
+            }
+        }
+
+        private void btnBuild_Click(object sender, EventArgs e)
+        {
+            var builder = GetSelectedBuilder();
+            if (builder == null) return;
+
+            string currentSelection = comboBoxRacers.SelectedItem.ToString();
+
+            if (lastUpgradedRacer == currentSelection)
+            {
+                MessageBox.Show("Будет достаточно и одного логотипа, никто не любит слишком навязчивую рекламу");
+                return;
+            }
+
+            builder.BuildStats();
+            builder.BuildDesign();
+            builder.BuildEngine();
+            builder.BuildExp();
+            builder.BuildSetup();
+            if (builder.GetResult().Name == "Молния Маккуин")
+            {
+                MessageBox.Show("Будет достаточно и одного логотипа, никто не любит слишком навязчивую рекламу");
+                lastUpgradedRacer = currentSelection;
+                UpdateDisplay(builder.GetResult());
+                return;
+            }
+
+            director.Construct(builder);
+            lastUpgradedRacer = currentSelection;
+            UpdateDisplay(builder.GetResult());
+        }
+    }
+
     public class RaceParticipant
     {
         public string Name { get; set; }
-        public string Setting { get; set; }
         public int Power { get; set; }
-        public string Color { get; set; }
+        public string Setup { get; set; }
         public bool SponsorDesign { get; set; }
-        public int YearsExp { get; set; }
-
-        public void ReadyToRace()
-        {
-            Console.WriteLine($"Участник: {Name}");
-            Console.WriteLine($"- {Power} HP, {YearsExp} years exp");
-            Console.WriteLine($"- {Color}, Sponsor: {SponsorDesign}");
-            Console.WriteLine($"- Setup: {Setting}\n");
-        }
+        public int Exp { get; set; }
+        public string ImagePath { get; set; }
     }
 
     public abstract class ParticipantBuilder
     {
         protected RaceParticipant car = new RaceParticipant();
-
         public abstract void BuildStats();
         public abstract void BuildEngine();
         public abstract void BuildDesign();
+        public abstract void BuildExp();
         public abstract void BuildSetup();
 
-        public void SetSponsorDesign(bool isSponsor) => car.SponsorDesign = isSponsor;
+        public void SetSponsorDesign(bool isSponsor, string newImagePath)
+        {
+            car.SponsorDesign = isSponsor;
+            car.ImagePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, newImagePath);
+        }
+
         public RaceParticipant GetResult() => car;
     }
 
     public class McQueenBuilder : ParticipantBuilder
     {
-        public override void BuildStats() { car.Name = "Молния Маккуин"; car.YearsExp = 15; }
+        public override void BuildStats() => car.Name = "Молния Маккуин";
+        public override void BuildExp() => car.Exp = 15;
         public override void BuildEngine() => car.Power = 750;
-        public override void BuildDesign() { car.Color = "Красный"; car.SponsorDesign = true; }
-        public override void BuildSetup() => car.Setting = "Универсал";
+        public override void BuildSetup() => car.Setup = "Универсал";
+        public override void BuildDesign() => SetSponsorDesign(true, "images/mcqueen1.png");
     }
 
     public class MaterBuilder : ParticipantBuilder
     {
-        public override void BuildStats() { car.Name = "Мэтр"; car.YearsExp = 10; }
+        public override void BuildStats() => car.Name = "Мэтр";
+        public override void BuildExp() => car.Exp = 10;
         public override void BuildEngine() => car.Power = 300;
-        public override void BuildDesign() { car.Color = "Ржавый"; car.SponsorDesign = false; }
-        public override void BuildSetup() => car.Setting = "Грунтовая дорога";
+        public override void BuildSetup() => car.Setup = "Грунтовая дорога";
+        public override void BuildDesign() => SetSponsorDesign(false, "images/mater1.png");
     }
 
     public class CruzBuilder : ParticipantBuilder
     {
-        public override void BuildStats() { car.Name = "Круз Рамирес"; car.YearsExp = 3; }
+        public override void BuildStats() => car.Name = "Круз Рамирес";
+        public override void BuildExp() => car.Exp = 3;
         public override void BuildEngine() => car.Power = 900;
-        public override void BuildDesign() { car.Color = "Жёлтый"; car.SponsorDesign = false; }
-        public override void BuildSetup() => car.Setting = "Гоночный трек";
+        public override void BuildSetup() => car.Setup = "Гоночный трек";
+        public override void BuildDesign() => SetSponsorDesign(false, "images/cruz1.png");
     }
 
     public class StormBuilder : ParticipantBuilder
     {
-        public override void BuildStats() { car.Name = "Джексон Шторм"; car.YearsExp = 3; }
+        public override void BuildStats() => car.Name = "Джексон Шторм";
         public override void BuildEngine() => car.Power = 900;
-        public override void BuildDesign() { car.Color = "Чёрный"; car.SponsorDesign = false; }
-        public override void BuildSetup() => car.Setting = "Гоночный трек";
+        public override void BuildExp() => car.Exp = 3;
+        public override void BuildSetup() => car.Setup = "Гоночный трек";
+        public override void BuildDesign() => SetSponsorDesign(false, "images/storm1.png");
     }
 
     public class HudsonBuilder : ParticipantBuilder
     {
-        public override void BuildStats() { car.Name = "Док Хадсон"; car.YearsExp = 40; }
+        public override void BuildStats() => car.Name = "Док Хадсон";
+        public override void BuildExp() => car.Exp = 40;
         public override void BuildEngine() => car.Power = 450;
-        public override void BuildDesign() { car.Color = "Тёмно синий"; car.SponsorDesign = false; }
-        public override void BuildSetup() => car.Setting = "Универсал";
+        public override void BuildSetup() => car.Setup = "Универсал";
+        public override void BuildDesign() => SetSponsorDesign(false, "images/doc1.png");
     }
 
     public class BernoulliBuilder : ParticipantBuilder
     {
-        public override void BuildStats() { car.Name = "Франческо Бернулли"; car.YearsExp = 15; }
+        public override void BuildStats() => car.Name = "Франческо Бернулли";
+        public override void BuildExp() => car.Exp = 15;
         public override void BuildEngine() => car.Power = 750;
-        public override void BuildDesign() { car.Color = "Красно-зелёный"; car.SponsorDesign = false; }
-        public override void BuildSetup() => car.Setting = "Гоночный трек";
+        public override void BuildSetup() => car.Setup = "Гоночный трек";
+        public override void BuildDesign() => SetSponsorDesign(false, "images/bernulli1.png");
     }
 
     public class Director
@@ -254,46 +354,31 @@ namespace RustezeRacing
         {
             builder.BuildStats();
             builder.BuildEngine();
-            builder.BuildDesign();
             builder.BuildSetup();
-            CheckDesign(builder);
-        }
+            builder.BuildExp();
+            builder.BuildDesign();
 
-        private void CheckDesign(ParticipantBuilder builder)
-        {
-            var participant = builder.GetResult();
-            if (!participant.SponsorDesign)
+            if (!builder.GetResult().SponsorDesign)
             {
-                Console.WriteLine($"У гонщика {participant.Name} нет логотипа. Исправление...");
-                builder.SetSponsorDesign(true);
+                MessageBox.Show($"У {builder.GetResult().Name} нет крутого логотипа. Исправляем это чучело...");
+
+                string logoImg = "";
+                var name = builder.GetResult().Name;
+                if (name == "Мэтр") logoImg = "images/mater2.png";
+                else if (name == "Круз Рамирес") logoImg = "images/cruz2.png";
+                else if (name == "Джексон Шторм") logoImg = "images/storm2.png";
+                else if (name == "Док Хадсон") logoImg = "images/doc2.png";
+                else if (name == "Франческо Бернулли") logoImg = "images/bernulli2.png";
+
+                builder.SetSponsorDesign(true, logoImg);
             }
         }
     }
 
-    class Program
-    {
-        static void Main()
-        {
-            Director director = new Director();
-            var builders = new List<ParticipantBuilder>
-            {
-                new McQueenBuilder(),
-                new MaterBuilder(),
-                new CruzBuilder(),
-                new StormBuilder(),
-                new HudsonBuilder(),
-                new BernoulliBuilder()
-            };
 
-            foreach (var builder in builders)
-            {
-                director.Construct(builder);
-                builder.GetResult().ReadyToRace();
-            }
-        }
-    }
 }
 ```
+
 
 
 
