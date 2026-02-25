@@ -12,7 +12,8 @@
 2. ParticipantBuilder - абстрактный строитель. Методы: buildStats(), buildEngine(), buildSponsorDesign(), buildRaceSetup(), getResult().  
 3. Конкретные строители (McQueenBuilder, CruzBuilder, HudsonBuilder, StormBuilder, BernulliBuilder, MaterBuilder) формируют участников по собственной логике.  
 4. Продукт RaceParticipant содержит имя участника, настройку двигателя, мощность, цвет, оформление спонсора, опыт и метод готовности к гонке.  
-<img width="851" height="1021" alt="тачки1 drawio" src="https://github.com/user-attachments/assets/779adb33-bf61-4b71-bd64-aee19c1013aa" />
+<img width="851" height="1021" alt="cars1" src="https://github.com/user-attachments/assets/f7f57ea3-5c80-4298-b695-901481a9d74d" />
+
 
 
 <h3 align="center"> Реализация идеи без строителя. </h3>
@@ -158,8 +159,9 @@ namespace RustezeRacing
     }
 }
 ```
+<img width="471" height="641" alt="cars2" src="https://github.com/user-attachments/assets/4bd3f5f7-9445-40e4-a506-904d827e3e2b" />
 
-<img width="471" height="641" alt="ТАЧКИбезСТРОИТЕЛЯ (1)" src="https://github.com/user-attachments/assets/1fc411e4-3fb9-411f-9c9d-ac7ca67068e5" />
+
 
 
 <h3 align="center"> Реализация идеи со строителем. </h3>
@@ -389,4 +391,5 @@ namespace CarsApp
 Для проекта моего масштаба паттерн избыточен, будет гораздо выгоднее из-за простоты кода начирикать код простыми конструкторами без использования строителя. Но если задача будет больше и будет масштабироваться, строитель будет полезнее просто для того, чтобы не заблудиться в трёх соснах аки конструкторах и условиях.  
 
 В общем и целом, код с паттерном выглядит более профессионально, как будто я не студентка, а сижу в паддоке на трассе и выбираю, как собрать машинку для гонок.  
+
 
