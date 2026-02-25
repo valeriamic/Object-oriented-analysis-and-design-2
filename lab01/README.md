@@ -12,7 +12,8 @@
 2. ParticipantBuilder - абстрактный строитель. Методы: buildStats(), buildEngine(), buildSponsorDesign(), buildRaceSetup(), getResult().  
 3. Конкретные строители (McQueenBuilder, CruzBuilder, HudsonBuilder, StormBuilder, BernulliBuilder, MaterBuilder) формируют участников по собственной логике.  
 4. Продукт RaceParticipant содержит имя участника, настройку двигателя, мощность, цвет, оформление спонсора, опыт и метод готовности к гонке.  
-<img width="851" height="1021" alt="cars1" src="https://github.com/user-attachments/assets/f7f57ea3-5c80-4298-b695-901481a9d74d" />
+<img width="851" height="1021" alt="cars1 drawio" src="https://github.com/user-attachments/assets/14a941b9-cada-4d3c-a6fd-ef634e90b1b2" />
+
 
 
 
@@ -391,5 +392,6 @@ namespace CarsApp
 Для проекта моего масштаба паттерн избыточен, будет гораздо выгоднее из-за простоты кода начирикать код простыми конструкторами без использования строителя. Но если задача будет больше и будет масштабироваться, строитель будет полезнее просто для того, чтобы не заблудиться в трёх соснах аки конструкторах и условиях.  
 
 В общем и целом, код с паттерном выглядит более профессионально, как будто я не студентка, а сижу в паддоке на трассе и выбираю, как собрать машинку для гонок.  
+
 
 
