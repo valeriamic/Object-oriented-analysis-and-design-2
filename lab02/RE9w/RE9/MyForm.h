@@ -11,13 +11,11 @@ namespace RE9 {
 	using namespace System::Drawing;
 	using namespace System::IO;
 
-	// Предварительные объявления
 	ref class Blood;
 	ref class AmmoPress;
 	ref class MedLab;
 	ref class ChemStation;
 
-	// --- КЛАСС ФОРМЫ ---
 	public ref class MyForm : public System::Windows::Forms::Form
 	{
 	private:
@@ -62,7 +60,6 @@ namespace RE9 {
 		void LoadImages();
 	};
 
-	// --- РЕСУРС (Теперь единственный и неповторимый) ---
 	public ref class Blood {
 	private:
 		int hemoglobinLevel;
@@ -75,11 +72,9 @@ namespace RE9 {
 		int GetAntibodies() { return antibodiesLevel; }
 	};
 
-	// --- СТАНЦИИ (Теперь жестко зависят от класса Blood) ---
 	public ref class AmmoPress {
 	public:
 		bool Craft(Blood^ blood, int count) {
-			// Напрямую вызываем специфический метод Blood
 			return blood->ExtractIron() >= (count * 5);
 		}
 	};
@@ -98,7 +93,6 @@ namespace RE9 {
 		}
 	};
 
-	// --- РЕАЛИЗАЦИЯ МЕТОДОВ ФОРМЫ ---
 
 	inline void MyForm::InitSystems() {
 		this->bloodSource = gcnew Blood(currentBlood, currentBlood, currentBlood);
@@ -117,7 +111,6 @@ namespace RE9 {
 		int count = (int)numAmmo->Value;
 		if (count <= 0) return;
 
-		// ПАТТЕРНА НЕТ: Передаем bloodSource напрямую в AmmoPress
 		if (ammoPress->Craft(bloodSource, count)) {
 			currentBlood -= (count * 5);
 			bloodSource = gcnew Blood(currentBlood, currentBlood, currentBlood);
@@ -157,7 +150,6 @@ namespace RE9 {
 	}
 
 	inline void MyForm::InitializeComponent(void) {
-		// (Код InitializeComponent и LoadImages остается без изменений)
 		this->numAmmo = (gcnew System::Windows::Forms::NumericUpDown());
 		this->numHeal = (gcnew System::Windows::Forms::NumericUpDown());
 		this->numExplo = (gcnew System::Windows::Forms::NumericUpDown());
