@@ -11,7 +11,7 @@
 
 <h3 align="center"> Реализация идеи с адаптером </h3>
 
-```cs
+```cpp
 public interface class IInputMaterial {
 	int GetVolume();
 };
@@ -65,4 +65,39 @@ public:
 };
 ```
 
+<h3 align="center"> Реализация идеи без адаптера </h3>
 
+```cpp
+public ref class Blood {
+	private:
+		int hemoglobinLevel;
+		int alcoholLevel;
+		int antibodiesLevel;
+	public:
+		Blood(int h, int al, int an) : hemoglobinLevel(h), alcoholLevel(al), antibodiesLevel(an) {}
+		int ExtractIron() { return hemoglobinLevel; }
+		int GetAlcohol() { return alcoholLevel; }
+		int GetAntibodies() { return antibodiesLevel; }
+	};
+
+	public ref class AmmoPress {
+	public:
+		bool Craft(Blood^ blood, int count) {
+			return blood->ExtractIron() >= (count * 5);
+		}
+	};
+
+	public ref class MedLab {
+	public:
+		bool Produce(Blood^ blood, int count) {
+			return blood->GetAlcohol() >= (count * 30);
+		}
+	};
+
+	public ref class ChemStation {
+	public:
+		bool Create(Blood^ blood, int count) {
+			return blood->GetAntibodies() >= (count * 60);
+		}
+	};
+```
