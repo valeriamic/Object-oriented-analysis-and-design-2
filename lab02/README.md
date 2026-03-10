@@ -2,4 +2,6 @@
 Решение: Учёные академии Амбрелла создают систему Био-адаптеров. Каждый адаптер выступает в роли преобразователя, который переводит биологические параметры крови в технические параметры, понятные уже созданным станкам.
 Они создают единый интерфейс IComponent с методом GetVolume(), который ожидают все станки. Затем для каждого типа крафта создаётся свой адаптер: BloodToAmmoAdapter: извлекает из крови железо и нужные ферменты для создания порохового заряда, BloodToHealAdapter: извлекает из крови антитела, BloodToExplosiveAdapter: извлекает из крови спирт.
 Идея: Интерфейс IInputMaterial содержит метод GetVolume(). Это то, с чем могут работать все станки. Класс Blood имеет свои методы Extraction(), GetAlcohol(), GetAntibodies(). Классы-адаптеры BloodtoAmmoAdapter, BloodtoHealAdapter, BloodToExplosiveAdapter принимают объект Blood и адаптируют его методы под нужды Грейс.
+
+
 <img width="741" height="681" alt="reclass" src="https://github.com/user-attachments/assets/ee63aa5f-6187-4fef-8a1b-bbc7ac1fd7e0" />
