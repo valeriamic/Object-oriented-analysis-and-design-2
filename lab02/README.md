@@ -5,3 +5,57 @@
 
 
 <img width="741" height="681" alt="reclass" src="https://github.com/user-attachments/assets/ee63aa5f-6187-4fef-8a1b-bbc7ac1fd7e0" />
+
+Код с паттерном
+
+public interface class IInputMaterial {
+	int GetVolume();
+};
+
+public ref class Blood {
+private:
+	int hemoglobinLevel;
+	int alcoholLevel;
+	int antibodiesLevel;
+public:
+	Blood(int h, int al, int an) : hemoglobinLevel(h), alcoholLevel(al), antibodiesLevel(an) {}
+	int ExtractIron() { return hemoglobinLevel; }
+	int GetAlcohol() { return alcoholLevel; }
+	int GetAntibodies() { return antibodiesLevel; }
+};
+
+public ref class BloodToAmmoAdapter : IInputMaterial {
+	Blood^ bloodSource;
+public:
+	BloodToAmmoAdapter(Blood^ b) { bloodSource = b; }
+	virtual int GetVolume() { return bloodSource->ExtractIron(); }
+};
+
+public ref class BloodToHealAdapter : IInputMaterial {
+	Blood^ bloodSource;
+public:
+	BloodToHealAdapter(Blood^ b) { bloodSource = b; }
+	virtual int GetVolume() { return bloodSource->GetAlcohol(); }
+};
+
+public ref class BloodToExplosiveAdapter : IInputMaterial {
+	Blood^ bloodSource;
+public:
+	BloodToExplosiveAdapter(Blood^ b) { bloodSource = b; }
+	virtual int GetVolume() { return bloodSource->GetAntibodies(); }
+};
+
+public ref class AmmoPress {
+public:
+	bool Craft(IInputMaterial^ material, int count) { return material->GetVolume() >= (count * 5); }
+};
+
+public ref class MedLab {
+public:
+	bool Produce(IInputMaterial^ material, int count) { return material->GetVolume() >= (count * 30); }
+};
+
+public ref class ChemStation {
+public:
+	bool Create(IInputMaterial^ material, int count) { return material->GetVolume() >= (count * 60); }
+};
