@@ -1,3 +1,0 @@
-C:\Users\Valeria\source\repos\RE9\RE9\x64\Debug\RE9.vcxproj.AssemblyReference.cache
-C:\Users\Valeria\source\repos\RE9\RE9\x64\Debug\RE9.MyForm.resources
-C:\Users\Valeria\source\repos\RE9\RE9\x64\Debug\RE9.vcxproj.GenerateResource.cache
