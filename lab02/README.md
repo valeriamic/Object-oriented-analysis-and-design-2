@@ -106,3 +106,8 @@ public ref class Blood {
 
 
 
+Пруфы, если не запустится:
+
+https://rutube.ru/video/private/8d906763f736ead942672909a56e0004/?p=wThp2PeL8_y7uukcYwVFuw
+
+https://rutube.ru/video/private/544f497eff74128ae4711440461e64ad/?p=63la94HbU4pS_cI1--FIqQ
