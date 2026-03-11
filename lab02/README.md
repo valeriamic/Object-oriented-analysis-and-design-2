@@ -6,7 +6,8 @@
 Идея: Интерфейс IInputMaterial содержит метод GetVolume(). Это то, с чем могут работать все станки. Класс Blood имеет свои методы Extraction(), GetAlcohol(), GetAntibodies(). Классы-адаптеры BloodtoAmmoAdapter, BloodtoHealAdapter, BloodToExplosiveAdapter принимают объект Blood и адаптируют его методы под нужды Грейс.  
 
 
-<img width="791" height="781" alt="re9" src="https://github.com/user-attachments/assets/c3ea003d-f8ae-4853-96a1-ceb197f9edd7" />
+
+<img width="731" height="711" alt="re9r" src="https://github.com/user-attachments/assets/dd6af103-a02c-4b54-9d32-e6550eebd366" />
 
 
 
@@ -102,5 +103,6 @@ public ref class Blood {
 		}
 	};
 ```
+
 
 
