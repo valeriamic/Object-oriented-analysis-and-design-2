@@ -1,4 +1,5 @@
-<img width="1161" height="791" alt="stalker (1)" src="https://github.com/user-attachments/assets/4fecb7b9-b191-42cb-8c48-e6710737dbea" />
+<img width="1091" height="751" alt="stalker11" src="https://github.com/user-attachments/assets/76e786ac-fc3e-4f48-97a4-b8b9d65f126b" />
+
 
 Основная идея
 Суть работы заключается в реализации системы игровых достижений для КПК сталкера с использованием паттерна Data Mapper. Преследуется цель сделать так, чтобы игровая логикабыла полностью изолирована от механизма хранения данных.
