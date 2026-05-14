@@ -241,3 +241,206 @@ public class StalkerGame {
     }
 }
 ```
+
+
+Код без паттерна.
+
+```java
+import java.util.*;
+import java.io.*;
+
+abstract class Achieve {
+    protected int id;
+    protected String title;
+    protected String description;
+
+    public Achieve(int id, String title, String description) {
+        this.id = id;
+        this.title = title;
+        this.description = description;
+    }
+
+    public abstract void updateProgress(Object data);
+    public abstract boolean isCompleted();
+
+    public int getId() { return id; }
+    public String getTitle() { return title; }
+    public String getDescription() { return description; }
+
+    public abstract String toCsvRow();
+}
+
+class CounterAchieve extends Achieve {
+    private int currCount;
+    private final int targetCount;
+
+    public CounterAchieve(int id, String title, String desc, int curr, int target) {
+        super(id, title, desc);
+        this.currCount = curr;
+        this.targetCount = target;
+    }
+
+    @Override
+    public void updateProgress(Object data) {
+        if (data instanceof Integer) {
+            this.currCount += (Integer) data;
+            if (this.currCount > targetCount) this.currCount = targetCount;
+        }
+    }
+
+    @Override
+    public boolean isCompleted() {
+        return currCount >= targetCount;
+    }
+
+    @Override
+    public String toCsvRow() {
+        return String.format("%d;counter;%s;%s;%d;%d;0", id, title, description, currCount, targetCount);
+    }
+
+    @Override
+    public String toString() {
+        return String.format("[%s] %s: %s (%s)",
+                isCompleted() ? "X" : " ", title, description,
+                isCompleted() ? "ВЫПОЛНЕНО" : currCount + " / " + targetCount);
+    }
+}
+
+class BooleanAchieve extends Achieve {
+    private boolean isTriggered;
+
+    public BooleanAchieve(int id, String title, String desc, boolean triggered) {
+        super(id, title, desc);
+        this.isTriggered = triggered;
+    }
+
+    @Override
+    public void updateProgress(Object data) {
+        if (data instanceof Boolean) {
+            this.isTriggered = (Boolean) data;
+        }
+    }
+
+    @Override
+    public boolean isCompleted() {
+        return isTriggered;
+    }
+
+    @Override
+    public String toCsvRow() {
+        return String.format("%d;boolean;%s;%s;0;0;%d", id, title, description, isTriggered ? 1 : 0);
+    }
+
+    @Override
+    public String toString() {
+        return String.format("[%s] %s: %s (%s)",
+                isCompleted() ? "X" : " ", title, description,
+                isCompleted() ? "ВЫПОЛНЕНО" : "НЕ ВЫПОЛНЕНО");
+    }
+}
+
+public class StalkerGame {
+    private static final String FILE_PATH = "stalker_achievements.csv";
+
+    public static void main(String[] args) {
+        List<Achieve> pda = loadData();
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.println("============== КПК: СИСТЕМА ДОСТИЖЕНИЙ ==============");
+
+        while (true) {
+            System.out.println("\n[МЕНЮ КПК]: 1-Список | 2-Действие | 3-Сохранить | 0-Выход");
+            System.out.print(">> ");
+            String cmd = scanner.next();
+
+            if (cmd.equals("1")) {
+                System.out.println("\n--- ВАШИ ДОСТИЖЕНИЯ ---");
+                for (Achieve a : pda) System.out.println(a);
+            }
+            else if (cmd.equals("2")) {
+                System.out.println("\nВыберите симуляцию события:");
+                System.out.println("a) Продать КПК Сычу (+1 к 'Торговец информацией')");
+                System.out.println("b) Раскрыть дело Тремора (Выполнить 'Сыщик')");
+                System.out.println("c) Заработать 5000 рублей (+5000 к 'Состоятельный клиент')");
+                System.out.print(">> ");
+                String subCmd = scanner.next();
+
+                if (subCmd.equals("a")) {
+                    updateAchieveById(pda, 11, 1);
+                    System.out.println("Данные переданы Сычу.");
+                } else if (subCmd.equals("b")) {
+                    updateAchieveById(pda, 1, true);
+                    System.out.println("Улики найдены. Преступник наказан.");
+                } else if (subCmd.equals("c")) {
+                    updateAchieveById(pda, 12, 5000);
+                    System.out.println("Счёт пополнен.");
+                }
+            }
+            else if (cmd.equals("3")) {
+                saveData(pda);
+                System.out.println("Данные КПК синхронизированы с базой (CSV).");
+            }
+            else if (cmd.equals("0")) {
+                break;
+            }
+        }
+        System.out.println("Удачи в Зоне, сталкер.");
+        scanner.close();
+    }
+
+    private static List<Achieve> loadData() {
+        List<Achieve> list = new ArrayList<>();
+        File file = new File(FILE_PATH);
+
+        if (!file.exists()) {
+            System.out.println("Файл базы данных не найден. Создан пустой список.");
+            return list;
+        }
+
+        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+            String line = br.readLine(); // Пропускаем заголовок
+            while ((line = br.readLine()) != null) {
+                if (line.trim().isEmpty()) continue;
+
+                String[] p = line.split(";");
+                int id = Integer.parseInt(p[0]);
+                String type = p[1];
+                String title = p[2];
+                String desc = p[3];
+                int cur = Integer.parseInt(p[4]);
+                int tar = Integer.parseInt(p[5]);
+                boolean trig = p[6].equals("1");
+
+                if (type.equalsIgnoreCase("counter")) {
+                    list.add(new CounterAchieve(id, title, desc, cur, tar));
+                } else {
+                    list.add(new BooleanAchieve(id, title, desc, trig));
+                }
+            }
+        } catch (IOException | ArrayIndexOutOfBoundsException | NumberFormatException e) {
+            System.err.println("Ошибка при чтении файла: " + e.getMessage());
+        }
+        return list;
+    }
+
+    private static void saveData(List<Achieve> list) {
+        try (PrintWriter pw = new PrintWriter(new FileWriter(FILE_PATH))) {
+            pw.println("id;type;title;description;current_val;target_val;is_triggered");
+            for (Achieve a : list) {
+                pw.println(a.toCsvRow());
+            }
+        } catch (IOException e) {
+            System.err.println("Ошибка при сохранении файла: " + e.getMessage());
+        }
+    }
+
+    private static void updateAchieveById(List<Achieve> list, int id, Object progress) {
+        for (Achieve a : list) {
+            if (a.getId() == id) {
+                a.updateProgress(progress);
+                break;
+            }
+        }
+    }
+}
+```
