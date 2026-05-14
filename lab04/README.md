@@ -218,13 +218,13 @@ public class StalkerGame {
                 String subCmd = scanner.next();
 
                 if (subCmd.equals("a")) {
-                    pda.get(13).updateProgress(1); // Индекс 13 - Торговец информацией
+                    pda.get(13).updateProgress(1);
                     System.out.println("Данные переданы Сычу.");
                 } else if (subCmd.equals("b")) {
-                    pda.get(0).updateProgress(true); // Индекс 0 - Сыщик
+                    pda.get(0).updateProgress(true);
                     System.out.println("Улики найдены. Преступник наказан.");
                 } else if (subCmd.equals("c")) {
-                    pda.get(14).updateProgress(5000); // Индекс 14 - Состоятельный клиент
+                    pda.get(14).updateProgress(5000);
                     System.out.println("Счёт пополнен.");
                 }
             }
